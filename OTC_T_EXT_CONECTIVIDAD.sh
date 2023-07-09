@@ -16,6 +16,10 @@ set -e
 ##############
 # VARIABLES #
 ##############
+
+# sh -x /home/nae105215/RAW/USERDAS/OTC_T_V_BAJAS_SERVICIOS/bin/OTC_T_V_BAJAS_SERVICIOS.sh && sh -x /home/nae105215/RAW/USERDAS/OTC_T_V_DIGITALES_GANADAS/bin/OTC_T_V_DIGITALES_GANADAS.sh && sh -x /home/nae105215/RAW/USERDAS/OTC_T_V_TRADICIONALES_IMPLEMENTADAS/bin/OTC_T_V_TRADICIONALES_IMPLEMENTADAS.sh && sh -x /home/nae105215/RAW/USERDAS/OTC_T_V_TRADICIONALES_GANADAS/bin/OTC_T_V_TRADICIONALES_GANADAS.sh && sh -x /home/nae105215/RAW/USERDAS/OTC_T_V_DIGITALES_IMPLEMENTADAS/bin/OTC_T_V_DIGITALES_IMPLEMENTADAS.sh && sh -x /home/nae105215/EXT_CONECTIVIDAD/bin/OTC_T_EXT_CONECTIVIDAD.sh 20230705
+
+
 ENTIDAD=D_EXTRCNCTVDD0040
 version=1.2.1000.2.6.4.0-91
 HADOOP_CLASSPATH=$(hcat -classpath) export HADOOP_CLASSPATH
@@ -25,7 +29,6 @@ VAL_FECHA_EJEC=$1
 #VAL_RUTA=$2
 VAL_RUTA=/home/nae105215/EXT_CONECTIVIDAD
 ETAPA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'ETAPA';"`
-#ETAPA='1'
 VAL_ESQUEMA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_ESQUEMA';"`
 VAL_TABLA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA';"`
 VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA_SPARK';"`
@@ -172,6 +175,7 @@ if [ $error_spark -eq 0 ];then
 	exit 1
 fi
 
+vFTP_NOM_ARCHIVO_FORMATO='Extractor_Conectividad_Abril.txt'
 #VERIFICA SI EL ARCHIVO TXT CONTIENE DATOS
 echo "==== Valida si el archivo TXT contiene datos ====" >> $VAL_LOG
 cant_reg=`wc -l ${VAL_RUTA_ARCHIVO}` 
@@ -204,12 +208,15 @@ function exportar()
 		expect "sftp>"
 		send "cd ${VAL_FTP_RUTA}\n"
 		expect "sftp>"
-		send "put $VAL_RUTA_ARCHIVO\n"
+		send "put ${VAL_RUTA_ARCHIVO} $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
 		expect "sftp>"
 		send "exit\n"
 		interact
 EOF
 }
+
+# send "put $VAL_RUTA_ARCHIVO\n"
+# send "put $VAL_RUTA_ARCHIVO\n" $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
 
 #REALIZA LA TRANSFERENCIA DEL ARCHIVO TXT A RUTA FTP
 echo  "==== Inicia exportacion del archivo TXT a servidor $VAL_FTP_HOSTNAME ====" >> $VAL_LOG

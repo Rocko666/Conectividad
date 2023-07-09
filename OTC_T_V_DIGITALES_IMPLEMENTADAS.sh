@@ -1,10 +1,10 @@
 set -e
 #########################################################################################################
-# NOMBRE: OTC_T_V_BAJAS_SERVICIOS.sh			     	      								            #
+# NOMBRE: OTC_T_V_DIGITALES_IMPLEMENTADAS.sh	     	      								            #
 # DESCRIPCION:																							#
-#   Shell que extrae la información de la tabla v_bajas_servicios_DAS de SQLServer a Hive				#
+#   Shell que extrae la información de la tabla v_digitales_implementadas_DAS de SQLServer a Hive		#
 # AUTOR: Karina Castro - Softconsulting                            										#
-# FECHA CREACION: 2022-09-12   																			#
+# FECHA CREACION: 2022-09-09   																			#
 # PARAMETROS DEL SHELL                            													    #
 # N/A  												    						                        #
 #########################################################################################################
@@ -14,7 +14,7 @@ set -e
 ##############
 # VARIABLES #
 ##############
-ENTIDAD=D_URMBJSSRVCS0050
+ENTIDAD=D_URMDGTIMPLMNTDS0010
 version=1.2.1000.2.6.4.0-91
 HADOOP_CLASSPATH=$(hcat -classpath) export HADOOP_CLASSPATH
 
@@ -47,7 +47,7 @@ VAL_BD=$VAL_ESQUEMA.$VAL_TABLA
 VAL_BD_SQLSERVER=$VAL_ESQUEMA_SQLSERVER.$VAL_TABLA_SQLSERVER
 VAL_DIA=`date '+%Y%m%d'` 
 VAL_HORA=`date '+%H%M%S'` 
-VAL_LOG=$VAL_RUTA/log/OTC_T_V_BAJAS_SERVICIOS_$VAL_DIA$VAL_HORA.log
+VAL_LOG=$VAL_RUTA/log/OTC_T_V_DIGITALES_IMPLEMENTADAS_$VAL_DIA$VAL_HORA.log
 
 #VALIDACION DE PARAMETROS INICIALES
 if  [ -z "$ENTIDAD" ] || 
@@ -58,7 +58,6 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$VAL_DATABASE" ] || 
     [ -z "$VAL_USUARIO" ] || 
     [ -z "$VAL_PASSWORD" ] || 
-    [ -z "$VAL_CERTIFCADO" ] || 
     [ -z "$VAL_ESQUEMA_SQLSERVER" ] || 
     [ -z "$VAL_TABLA_SQLSERVER" ] || 
     [ -z "$VAL_RUTA_SPARK" ] || 
@@ -70,11 +69,12 @@ if  [ -z "$ENTIDAD" ] ||
 	exit 1
 fi
 
-#INICIO DEL PROCESO
-echo "==== Inicia extraccion tabla V_BAJAS_SERVICIOS_DAS de SQLServer ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+#INICIO DEL PROCESO MES ACTUAL
+echo "==== Inicia extraccion tabla V_DIGITALES_IMPLEMENTADAS_DAS de SQLServer ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 
 #REALIZA LA TRANSFERENCIA DE LOS ARCHIVOS DESDE EL SERVIDOR FTP A RUTA LOCAL EN BIGDATA
-echo "==== Ejecuta archivo spark otc_t_v_bajas_servicios.py que extrae informacion de Postgress a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== Ejecuta archivo spark otc_t_v_digitales_implementadas.py que extrae informacion de Postgress a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== Ejecuta archivo spark otc_t_v_bajas_servicios.py que extrae informacion de Postgress a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 2>&1 &>> $VAL_LOG
 $VAL_RUTA_SPARK \
 --conf spark.ui.enabled=false \
 --conf spark.dynamicAllocation.enabled=false \
@@ -85,7 +85,7 @@ $VAL_RUTA_SPARK \
 --executor-cores 4 \
 --driver-memory 32G \
 --jars /var/opt/tel_lib/sqljdbc42.jar \
-$VAL_RUTA/python/otc_t_v_bajas_servicios.py \
+$VAL_RUTA/python/otc_t_v_digitales_implementadas.py \
 --vUrl=$VAL_URL \
 --vDatabase=$VAL_DATABASE \
 --vUid=$VAL_USUARIO \
@@ -96,9 +96,9 @@ $VAL_RUTA/python/otc_t_v_bajas_servicios.py \
 #VALIDA EJECUCION DEL ARCHIVO SPARK
 error_spark=`egrep 'SyntaxError:|pyodbc.InterfaceError:|Caused by:|pyspark.sql.utils.ParseException|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client' $VAL_LOG | wc -l`
 if [ $error_spark -eq 0 ];then
-	echo "==== OK - La ejecucion del archivo spark otc_t_v_bajas_servicios.py es EXITOSO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
+	echo "==== OK - La ejecucion del archivo spark otc_t_v_digitales_implementadas.py es EXITOSO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
 	else
-	echo "==== ERROR: - En la ejecucion del archivo spark otc_t_v_bajas_servicios.py ====" 2>&1 &>> $VAL_LOG
+	echo "==== ERROR: - En la ejecucion del archivo spark otc_t_v_digitales_implementadas.py ====" 2>&1 &>> $VAL_LOG
 	exit 1
 fi
 
@@ -113,4 +113,5 @@ echo "Cantidad registros destino: $cant_reg_d" 2>&1 &>> $VAL_LOG
 			exit 1
 	fi
 
-echo "==== Finaliza extraccion tabla V_BAJAS_SERVICIOS_DAS de SQLServer ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== Finaliza extraccion tabla V_DIGITALES_IMPLEMENTADAS de SQLServer ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+
