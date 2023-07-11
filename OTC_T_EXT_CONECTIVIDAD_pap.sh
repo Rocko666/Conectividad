@@ -12,29 +12,27 @@ set -e
 #########################################################################################################
 # MODIFICACIONES																						#
 # FECHA  		AUTOR     		DESCRIPCION MOTIVO														#
+# 11/07/2023    Cristian Ortiz  Control errores, estandares Cloudera, cambio conexion SQL SERVER        #
 #########################################################################################################
 ##############
 # VARIABLES #
 ##############
 
-# sh -x /home/nae105215/RAW/USERDAS/OTC_T_V_BAJAS_SERVICIOS/bin/OTC_T_V_BAJAS_SERVICIOS.sh && sh -x /home/nae105215/RAW/USERDAS/OTC_T_V_DIGITALES_GANADAS/bin/OTC_T_V_DIGITALES_GANADAS.sh && sh -x /home/nae105215/RAW/USERDAS/OTC_T_V_TRADICIONALES_IMPLEMENTADAS/bin/OTC_T_V_TRADICIONALES_IMPLEMENTADAS.sh && sh -x /home/nae105215/RAW/USERDAS/OTC_T_V_TRADICIONALES_GANADAS/bin/OTC_T_V_TRADICIONALES_GANADAS.sh && sh -x /home/nae105215/RAW/USERDAS/OTC_T_V_DIGITALES_IMPLEMENTADAS/bin/OTC_T_V_DIGITALES_IMPLEMENTADAS.sh && sh -x /home/nae105215/EXT_CONECTIVIDAD/bin/OTC_T_EXT_CONECTIVIDAD.sh 20230705
-
-ENTIDAD=D_EXTRCNCTVDD0040
+ENTIDAD=EXTRCNCTVDD0040
 
 #PARAMETROS QUE RECIBE LA SHELL
 VAL_FECHA_EJEC=$1
-#VAL_RUTA=$2
-VAL_RUTA=/home/nae105215/EXT_CONECTIVIDAD
-ETAPA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'ETAPA';"`
-VAL_COLA_EJECUCION=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_COLA_EJECUCION';"`
-VAL_ESQUEMA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_ESQUEMA';"`
-VAL_TABLA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA';"`
-VAL_NOM_ARCHIVO=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO';"`
-VAL_FTP_PUERTO=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO';"`
-VAL_FTP_USER=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_USER';"`
-VAL_FTP_HOSTNAME=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_HOSTNAME';"`
-VAL_FTP_PASS=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PASS';"`
-VAL_FTP_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_RUTA';"`
+VAL_RUTA=$2
+ETAPA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'ETAPA';"`
+VAL_COLA_EJECUCION=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_COLA_EJECUCION';"`
+VAL_ESQUEMA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_ESQUEMA';"`
+VAL_TABLA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA';"`
+VAL_NOM_ARCHIVO=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO';"`
+VAL_FTP_PUERTO=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO';"`
+VAL_FTP_USER=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_USER';"`
+VAL_FTP_HOSTNAME=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_HOSTNAME';"`
+VAL_FTP_PASS=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PASS';"`
+VAL_FTP_RUTA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_RUTA';"`
 
 #PARAMETROS CALCULADOS Y AUTOGENERADOS
 VAL_FEC_AYER=`date -d "${VAL_FECHA_EJEC} -1 day"  +"%Y%m%d"`
@@ -127,9 +125,9 @@ if [ $error_spark -eq 0 ];then
 	exit 1
 fi
 ETAPA=2
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 1 con EXITO ===="`date '+%H%M%S'` >> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='2' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='2' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 #PASO 2: LEE TABLA DE EXTRACTOR CONECTIVIDAD Y GENERA ARCHIVO TXT EN RUTA OUTPUT
@@ -163,7 +161,6 @@ if [ $error_spark -eq 0 ];then
 	exit 1
 fi
 
-vFTP_NOM_ARCHIVO_FORMATO='Extractor_Conectividad_Test.txt'
 #VERIFICA SI EL ARCHIVO TXT CONTIENE DATOS
 echo "==== Valida si el archivo TXT contiene datos ====" >> $VAL_LOG
 cant_reg=`wc -l ${VAL_RUTA_ARCHIVO}` 
@@ -177,9 +174,9 @@ cant_reg=`expr $cant_reg + 0`
 			exit 1
 	fi
 ETAPA=3
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 2 con EXITO ===="`date '+%H%M%S'` >> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='3' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='3' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 #CREA FUNCION PARA LA EXPORTACION DEL ARCHIVO A RUTA FTP Y REALIZA LA TRANSFERENCIA
@@ -196,15 +193,12 @@ function exportar()
 		expect "sftp>"
 		send "cd ${VAL_FTP_RUTA}\n"
 		expect "sftp>"
-		send "put ${VAL_RUTA_ARCHIVO} $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
+		send "put $VAL_RUTA_ARCHIVO\n"
 		expect "sftp>"
 		send "exit\n"
 		interact
 EOF
 }
-
-# send "put $VAL_RUTA_ARCHIVO\n"
-# send "put ${VAL_RUTA_ARCHIVO} $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
 
 #REALIZA LA TRANSFERENCIA DEL ARCHIVO TXT A RUTA FTP
 echo  "==== Inicia exportacion del archivo TXT a servidor $VAL_FTP_HOSTNAME ====" >> $VAL_LOG
@@ -224,9 +218,9 @@ VAL_ERROR_FTP=`egrep 'Connection timed out|Not connected|syntax is incorrect|can
 		else
 		echo "==== OK - La transferencia del archivo TXT al servidor FTP es EXITOSA ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
 	fi
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 3 con EXITO ===="`date '+%H%M%S'` >> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='1' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='1' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 echo "==== Finaliza ejecucion proceso EXTRACTOR CONECTIVIDAD ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG

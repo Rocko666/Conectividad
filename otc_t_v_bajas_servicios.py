@@ -55,7 +55,7 @@ spark.conf.set("hive.exec.dynamic.partition.mode", "nonstrict")
 sqlContext = SQLContext(sc)
 
 
-query = "(SELECT item,codigo_caso,codbien,nomcli,ruccli,region,comercial,jefecomercial,idc,negocio,complejidad,vser,vum,vequi,vnrc,vmrc,caudal,canaldas,servicio,"
+query = "(SELECT item,codigo_caso,codbien,nomcli,ruccli,region,comercial,jefecomercial,idc,negocio,complejidad,vser,vum,vequi,vncr as vnrc,vmrc,caudal,calnadas as canaldas,servicio,"
 query = query + "medio,vmrcn,numeroventa,idAcceso,fecha_salida,codigo_das,codigo_localidad,nombre_das,ruc_das,jeferegional,fecha_implementacion,canal_comercial"
 query = query + " FROM "+vTabla +") as c"
 
@@ -69,12 +69,12 @@ if df.limit(1).count <=0:
         exit(etq_nodata(msg_e_df_nodata(str('df'))))
 else:
     try:
-        timestart_tbl = datetime.datetime.now()
+        timestart_tbl = datetime.now()
         print(etq_info(msg_i_insert_hive(bd)))
         df.write.mode("overwrite").insertInto(bd, overwrite=True)
         df.printSchema()
-        print(etq_info(msg_t_total_registros_hive(bd,str(df.limit(1).count)))) 
-        timeend_tbl = datetime.datetime.now()
+        print(etq_info(msg_t_total_registros_hive(bd,str(df.count())))) 
+        timeend_tbl = datetime.now()
         print(etq_info(msg_d_duracion_hive(bd,vle_duracion(timestart_tbl,timeend_tbl))))
     except Exception as e:       
         exit(etq_error(msg_e_insert_hive(bd,str(e))))

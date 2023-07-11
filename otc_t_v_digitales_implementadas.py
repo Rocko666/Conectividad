@@ -68,12 +68,12 @@ if df.limit(1).count <=0:
         exit(etq_nodata(msg_e_df_nodata(str('df'))))
 else:
     try:
-        timestart_tbl = datetime.datetime.now()
+        timestart_tbl = datetime.now()
         print(etq_info(msg_i_insert_hive(bd)))
         df.write.mode("overwrite").insertInto(bd, overwrite=True)
         df.printSchema()
-        print(etq_info(msg_t_total_registros_hive(bd,str(df.limit(1).count)))) 
-        timeend_tbl = datetime.datetime.now()
+        print(etq_info(msg_t_total_registros_hive(bd,str(df.count())))) 
+        timeend_tbl = datetime.now()
         print(etq_info(msg_d_duracion_hive(bd,vle_duracion(timestart_tbl,timeend_tbl))))
     except Exception as e:       
         exit(etq_error(msg_e_insert_hive(bd,str(e))))

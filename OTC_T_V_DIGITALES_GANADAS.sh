@@ -10,6 +10,7 @@ set -e
 #########################################################################################################
 # MODIFICACIONES																						#
 # FECHA  		AUTOR     		DESCRIPCION MOTIVO														#
+# 11/07/2023    Cristian Ortiz  Control errores, estandares Cloudera, cambio conexion SQL SERVER        #
 #########################################################################################################
 ##############
 # VARIABLES #
@@ -21,6 +22,7 @@ echo `date '+%Y-%m-%d %H:%M:%S'`" INFO: Parametros del SPARK GENERICO"
 ###########################################################################################################################################################
 VAL_KINIT=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_KINIT';"`
 $VAL_KINIT
+VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_RUTA_SPARK';"`
 
 #PARAMETROS QUE RECIBE LA SHELL
 VAL_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA';"`
@@ -33,7 +35,6 @@ VAL_USUARIO=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTID
 VAL_PASSWORD=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_PASSWORD';"`
 VAL_ESQUEMA_SQLSERVER=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_ESQUEMA_SQLSERVER';"`
 VAL_TABLA_SQLSERVER=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_SQLSERVER';"`
-VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA_SPARK';"`
 
 #PARAMETROS CALCULADOS Y AUTOGENERADOS
 VAL_BD=$VAL_ESQUEMA.$VAL_TABLA
@@ -64,7 +65,7 @@ fi
 echo "==== Inicia extraccion tabla V_DIGITALES_GANADAS_DAS de SQLServer ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 
 #REALIZA LA TRANSFERENCIA DE LOS ARCHIVOS DESDE EL SERVIDOR FTP A RUTA LOCAL EN BIGDATA
-echo "==== Ejecuta archivo spark otc_t_v_digitales_ganadas.py que extrae informacion de Postgress a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== Ejecuta archivo spark otc_t_v_digitales_ganadas.py que extrae informacion de SQL SERVER a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 $VAL_RUTA_SPARK \
 --conf spark.ui.enabled=false \
 --conf spark.dynamicAllocation.enabled=false \
