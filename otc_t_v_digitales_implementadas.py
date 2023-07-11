@@ -21,6 +21,11 @@ from pyspark.sql.functions import *
 from pyspark.sql import functions as F
 from pyspark.sql import HiveContext
 
+# Genericos 
+sys.path.insert(1,'/var/opt/tel_spark')
+from messages import *
+from functions import *
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--vUrl', required=True, type=str)
 parser.add_argument('--vDatabase', required=True, type=str)
@@ -59,16 +64,21 @@ df = sqlContext.read.format("jdbc") \
 
 df = df.withColumn('nomcli', F.regexp_replace('nomcli', '\t', ''))
 
-df.printSchema()
+if df.limit(1).count <=0:
+        exit(etq_nodata(msg_e_df_nodata(str('df'))))
+else:
+    try:
+        timestart_tbl = datetime.datetime.now()
+        print(etq_info(msg_i_insert_hive(bd)))
+        df.write.mode("overwrite").insertInto(bd, overwrite=True)
+        df.printSchema()
+        print(etq_info(msg_t_total_registros_hive(bd,str(df.limit(1).count)))) 
+        timeend_tbl = datetime.datetime.now()
+        print(etq_info(msg_d_duracion_hive(bd,vle_duracion(timestart_tbl,timeend_tbl))))
+    except Exception as e:       
+        exit(etq_error(msg_e_insert_hive(bd,str(e))))
 
-timestart_tbl = datetime.datetime.now()
-print ("==== Guardando los datos en tabla "+bd+" ====")
-df.repartition(10).write.mode("overwrite").insertInto(bd, overwrite=True)
-df.printSchema()
-timeend_tbl = datetime.datetime.now()
-duracion_tbl = timeend_tbl - timestart_tbl
 print("Escritura Exitosa de la tabla "+bd)
-print("Duracion create "+bd+" {}".format(duracion_tbl))
 
 spark.stop()
 hasta = time.time()

@@ -19,16 +19,14 @@ set -e
 
 # sh -x /home/nae105215/RAW/USERDAS/OTC_T_V_BAJAS_SERVICIOS/bin/OTC_T_V_BAJAS_SERVICIOS.sh && sh -x /home/nae105215/RAW/USERDAS/OTC_T_V_DIGITALES_GANADAS/bin/OTC_T_V_DIGITALES_GANADAS.sh && sh -x /home/nae105215/RAW/USERDAS/OTC_T_V_TRADICIONALES_IMPLEMENTADAS/bin/OTC_T_V_TRADICIONALES_IMPLEMENTADAS.sh && sh -x /home/nae105215/RAW/USERDAS/OTC_T_V_TRADICIONALES_GANADAS/bin/OTC_T_V_TRADICIONALES_GANADAS.sh && sh -x /home/nae105215/RAW/USERDAS/OTC_T_V_DIGITALES_IMPLEMENTADAS/bin/OTC_T_V_DIGITALES_IMPLEMENTADAS.sh && sh -x /home/nae105215/EXT_CONECTIVIDAD/bin/OTC_T_EXT_CONECTIVIDAD.sh 20230705
 
-
 ENTIDAD=D_EXTRCNCTVDD0040
-version=1.2.1000.2.6.4.0-91
-HADOOP_CLASSPATH=$(hcat -classpath) export HADOOP_CLASSPATH
 
 #PARAMETROS QUE RECIBE LA SHELL
 VAL_FECHA_EJEC=$1
 #VAL_RUTA=$2
 VAL_RUTA=/home/nae105215/EXT_CONECTIVIDAD
 ETAPA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'ETAPA';"`
+VAL_COLA_EJECUCION=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_COLA_EJECUCION';"`
 VAL_ESQUEMA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_ESQUEMA';"`
 VAL_TABLA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA';"`
 VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA_SPARK';"`
@@ -38,13 +36,6 @@ VAL_FTP_USER=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTI
 VAL_FTP_HOSTNAME=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_HOSTNAME';"`
 VAL_FTP_PASS=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PASS';"`
 VAL_FTP_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_RUTA';"`
-
-#PARAMETROS GENERICOS
-#VAL_COLA_EJECUCION=`mysql -N  <<<"select valor from params_des where ENTIDAD = 'D_PARAM_BEELINE' AND parametro = 'VAL_COLA_EJECUCION';"`
-VAL_COLA_EJECUCION='reportes'
-VAL_CADENA_JDBC=`mysql -N  <<<"select valor from params_des where ENTIDAD = 'D_PARAM_BEELINE' AND parametro = 'VAL_CADENA_JDBC';"`
-#VAL_USUARIO=`mysql -N  <<<"select valor from params_des where ENTIDAD = 'PARAM_BEELINE' AND parametro = 'VAL_USER';"`
-VAL_USUARIO=nae105215
 
 #PARAMETROS CALCULADOS Y AUTOGENERADOS
 VAL_FEC_AYER=`date -d "${VAL_FECHA_EJEC} -1 day"  +"%Y%m%d"`
@@ -91,9 +82,7 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$VAL_FTP_HOSTNAME" ] || 
     [ -z "$VAL_FTP_PASS" ] || 
     [ -z "$VAL_FTP_RUTA" ] || 
-    [ -z "$VAL_COLA_EJECUCION" ] || 
-    [ -z "$VAL_CADENA_JDBC" ] || 
-    [ -z "$VAL_USUARIO" ] || 
+    [ -z "$VAL_COLA_EJECUCION" ] ||  
     [ -z "$VAL_LOG" ]; then
 	echo " ERROR: - uno de los parametros esta vacio o nulo"
 	exit 1
@@ -175,7 +164,7 @@ if [ $error_spark -eq 0 ];then
 	exit 1
 fi
 
-vFTP_NOM_ARCHIVO_FORMATO='Extractor_Conectividad_Abril.txt'
+vFTP_NOM_ARCHIVO_FORMATO='Extractor_Conectividad_Test.txt'
 #VERIFICA SI EL ARCHIVO TXT CONTIENE DATOS
 echo "==== Valida si el archivo TXT contiene datos ====" >> $VAL_LOG
 cant_reg=`wc -l ${VAL_RUTA_ARCHIVO}` 
@@ -216,7 +205,7 @@ EOF
 }
 
 # send "put $VAL_RUTA_ARCHIVO\n"
-# send "put $VAL_RUTA_ARCHIVO\n" $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
+# send "put ${VAL_RUTA_ARCHIVO} $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
 
 #REALIZA LA TRANSFERENCIA DEL ARCHIVO TXT A RUTA FTP
 echo  "==== Inicia exportacion del archivo TXT a servidor $VAL_FTP_HOSTNAME ====" >> $VAL_LOG

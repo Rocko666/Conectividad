@@ -15,24 +15,17 @@ set -e
 # VARIABLES #
 ##############
 ENTIDAD=D_URMBJSSRVCS0050
-version=1.2.1000.2.6.4.0-91
-HADOOP_CLASSPATH=$(hcat -classpath) export HADOOP_CLASSPATH
 
 ###########################################################################################################################################################
 echo `date '+%Y-%m-%d %H:%M:%S'`" INFO: Parametros del SPARK GENERICO" 
 ###########################################################################################################################################################
 VAL_KINIT=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_KINIT';"`
 $VAL_KINIT
-#PARAMETROS GENERICOS
-#VAL_COLA_EJECUCION=`mysql -N  <<<"select valor from params_des where ENTIDAD = 'D_PARAM_BEELINE' AND parametro = 'VAL_COLA_EJECUCION';"`
-VAL_COLA_EJECUCION='reportes'
-VAL_CADENA_JDBC=`mysql -N  <<<"select valor from params_des where ENTIDAD = 'D_PARAM_BEELINE' AND parametro = 'VAL_CADENA_JDBC';"`
-#VAL_USER=`mysql -N  <<<"select valor from params_des where ENTIDAD = 'PARAM_BEELINE' AND parametro = 'VAL_USER';"`
-VAL_USER=nae105215
 
 #PARAMETROS QUE RECIBE LA SHELL
 VAL_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA';"`
 VAL_ESQUEMA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_ESQUEMA';"`
+VAL_COLA_EJECUCION=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_COLA_EJECUCION';"`
 VAL_TABLA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA';"`
 VAL_URL=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_URL';"`
 VAL_DATABASE=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_DATABASE';"`
@@ -58,14 +51,11 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$VAL_DATABASE" ] || 
     [ -z "$VAL_USUARIO" ] || 
     [ -z "$VAL_PASSWORD" ] || 
-    [ -z "$VAL_CERTIFCADO" ] || 
     [ -z "$VAL_ESQUEMA_SQLSERVER" ] || 
     [ -z "$VAL_TABLA_SQLSERVER" ] || 
     [ -z "$VAL_RUTA_SPARK" ] || 
     [ -z "$VAL_LOG" ] || 
-    [ -z "$VAL_COLA_EJECUCION" ] || 
-    [ -z "$VAL_CADENA_JDBC" ] || 
-    [ -z "$VAL_USER" ]; then
+    [ -z "$VAL_COLA_EJECUCION" ] ; then
 	echo " ERROR: - uno de los parametros esta vacio o nulo"
 	exit 1
 fi
@@ -101,16 +91,5 @@ if [ $error_spark -eq 0 ];then
 	echo "==== ERROR: - En la ejecucion del archivo spark otc_t_v_bajas_servicios.py ====" 2>&1 &>> $VAL_LOG
 	exit 1
 fi
-
-#VALIDA EXTRACCION DE REGISTROS
-echo "==== Verifica que se hayan extraido registros en Hive ====" 2>&1 &>> $VAL_LOG
-cant_reg_d=$(beeline -u $VAL_CADENA_JDBC -n $VAL_USER --hiveconf tez.queue.name=$VAL_COLA_EJECUCION --showHeader=false --outputformat=tsv2 -e "SELECT COUNT(1) FROM $VAL_ESQUEMA.$VAL_TABLA;")
-echo "Cantidad registros destino: $cant_reg_d" 2>&1 &>> $VAL_LOG
-	if [ $cant_reg_d -gt 0 ]; then
-			echo "==== OK - Se extrajeron datos de la fuente ====" 2>&1 &>> $VAL_LOG
-		else
-			echo "==== ERROR: - No se extrajeron datos de la fuente ====" 2>&1 &>> $VAL_LOG
-			exit 1
-	fi
 
 echo "==== Finaliza extraccion tabla V_BAJAS_SERVICIOS_DAS de SQLServer ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
