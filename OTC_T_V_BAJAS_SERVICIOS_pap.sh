@@ -67,8 +67,8 @@ echo "==== Inicia extraccion tabla V_BAJAS_SERVICIOS_DAS de SQLServer ===="`date
 #REALIZA LA TRANSFERENCIA DE LOS ARCHIVOS DESDE EL SERVIDOR FTP A RUTA LOCAL EN BIGDATA
 echo "==== Ejecuta archivo spark otc_t_v_bajas_servicios.py que extrae informacion de SQL SERVER a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 $VAL_RUTA_SPARK \
---conf spark.ui.enabled=false \
---conf spark.dynamicAllocation.enabled=false \
+ 
+
 --conf spark.port.maxRetries=100 \
 --master local \
 --executor-memory 32G \

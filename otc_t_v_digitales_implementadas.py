@@ -84,3 +84,6 @@ spark.stop()
 hasta = time.time()
 duracion = hasta - desde
 print("Duracion: {vDuracion}".format(vDuracion=duracion))
+
+
+#df0.repartition(1).write.format("parquet").mode("overwrite").saveAsTable('db_desarrollo2021.sol_port_in_3')

@@ -106,8 +106,6 @@ export PYTHONIOENCODING=UTF-8
 export LC_ALL="en_US.UTF-8"
 echo "==== Ejecuta archivo spark otc_t_ext_conectividad.py que carga informacion a Hive ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
 $VAL_RUTA_SPARK \
---conf spark.ui.enabled=false \
---conf spark.dynamicAllocation.enabled=false \
 --conf spark.port.maxRetries=100 \
 --master yarn \
 --executor-memory 16G \
@@ -137,8 +135,6 @@ if [ "$ETAPA" = "2" ]; then
 rm -f ${VAL_RUTA}/output/*
 echo "==== Lee tabla de Extractor Conectividad y genera archivo en ruta output ====" >> $VAL_LOG
 $VAL_RUTA_SPARK \
---conf spark.ui.enabled=false \
---conf spark.dynamicAllocation.enabled=false \
 --conf spark.port.maxRetries=100 \
 --master yarn \
 --executor-memory 16G \
@@ -163,7 +159,7 @@ if [ $error_spark -eq 0 ];then
 	exit 1
 fi
 
-vFTP_NOM_ARCHIVO_FORMATO='Extractor_Conectividad_Test.txt'
+#vFTP_NOM_ARCHIVO_FORMATO='Extractor_Conectividad_Test.txt'
 #VERIFICA SI EL ARCHIVO TXT CONTIENE DATOS
 echo "==== Valida si el archivo TXT contiene datos ====" >> $VAL_LOG
 cant_reg=`wc -l ${VAL_RUTA_ARCHIVO}` 

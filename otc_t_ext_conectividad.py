@@ -40,13 +40,10 @@ spark = SparkSession\
 sc = spark.sparkContext
 sc.setLogLevel("ERROR")
 
-spark.conf.set("spark.sql.crossJoin.enabled", "true")
-
 vTexto01="DesinstalaciÃ³n"
 vTexto=vTexto01.decode("utf-8")
 
 vSql="""
-
 SELECT a.tipo,
 a.fecha_proceso,
 a.fecha_implementacion,

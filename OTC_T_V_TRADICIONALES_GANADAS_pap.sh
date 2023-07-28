@@ -67,8 +67,8 @@ echo "==== Inicia extraccion tabla V_TRADICIONALES_GANADAS_DAS de SQLServer ====
 #REALIZA LA TRANSFERENCIA DE LOS ARCHIVOS DESDE EL SERVIDOR FTP A RUTA LOCAL EN BIGDATA
 echo "==== Ejecuta archivo spark otc_t_v_tradicionales_ganadas.py que extrae informacion de SQL SERVER a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 $VAL_RUTA_SPARK \
---conf spark.ui.enabled=false \
---conf spark.dynamicAllocation.enabled=false \
+ 
+
 --conf spark.port.maxRetries=100 \
 --master local \
 --executor-memory 32G \
