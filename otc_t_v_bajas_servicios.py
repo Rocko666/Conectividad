@@ -46,14 +46,12 @@ desde = time.time()
 spark = SparkSession\
     .builder\
     .appName("OTC_T_V_BAJAS_SERVICIOS")\
-    .master("local")\
     .enableHiveSupport()\
     .getOrCreate()
 sc = spark.sparkContext
 sc.setLogLevel("ERROR")
 spark.conf.set("hive.exec.dynamic.partition.mode", "nonstrict")
 sqlContext = SQLContext(sc)
-
 
 query = "(SELECT item,codigo_caso,codbien,nomcli,ruccli,region,comercial,jefecomercial,idc,negocio,complejidad,vser,vum,vequi,vncr as vnrc,vmrc,caudal,calnadas as canaldas,servicio,"
 query = query + "medio,vmrcn,numeroventa,idAcceso,fecha_salida,codigo_das,codigo_localidad,nombre_das,ruc_das,jeferegional,fecha_implementacion,canal_comercial"
@@ -71,7 +69,7 @@ else:
     try:
         timestart_tbl = datetime.now()
         print(etq_info(msg_i_insert_hive(bd)))
-        df.write.mode("overwrite").insertInto(bd, overwrite=True)
+        df.repartition(1).write.format("parquet").mode("overwrite").saveAsTable(bd)
         df.printSchema()
         print(etq_info(msg_t_total_registros_hive(bd,str(df.count())))) 
         timeend_tbl = datetime.now()

@@ -46,7 +46,6 @@ desde = time.time()
 spark = SparkSession\
     .builder\
     .appName("OTC_T_V_TRADICIONALES_IMPLEMENTADAS")\
-    .master("local")\
     .enableHiveSupport()\
     .getOrCreate()
 sc = spark.sparkContext
@@ -71,7 +70,7 @@ else:
     try:
         timestart_tbl = datetime.now()
         print(etq_info(msg_i_insert_hive(bd)))
-        df.write.mode("overwrite").insertInto(bd, overwrite=True)
+        df.repartition(1).write.format("parquet").mode("overwrite").saveAsTable(bd)
         df.printSchema()
         print(etq_info(msg_t_total_registros_hive(bd,str(df.count())))) 
         timeend_tbl = datetime.now()

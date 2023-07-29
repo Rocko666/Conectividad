@@ -104,10 +104,9 @@ export PYTHONIOENCODING=UTF-8
 export LC_ALL="en_US.UTF-8"
 echo "==== Ejecuta archivo spark otc_t_ext_conectividad.py que carga informacion a Hive ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
 $VAL_RUTA_SPARK \
- 
-
 --conf spark.port.maxRetries=100 \
 --master yarn \
+--queue reportes \
 --executor-memory 16G \
 --num-executors 12 \
 --executor-cores 12 \
@@ -135,10 +134,9 @@ if [ "$ETAPA" = "2" ]; then
 rm -f ${VAL_RUTA}/output/*
 echo "==== Lee tabla de Extractor Conectividad y genera archivo en ruta output ====" >> $VAL_LOG
 $VAL_RUTA_SPARK \
- 
-
 --conf spark.port.maxRetries=100 \
 --master yarn \
+--queue reportes \
 --executor-memory 16G \
 --num-executors 6 \
 --executor-cores 6 \

@@ -26,7 +26,6 @@ VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GE
 
 #PARAMETROS QUE RECIBE LA SHELL
 VAL_RUTA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA';"`
-VAL_COLA_EJECUCION=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_COLA_EJECUCION';"`
 VAL_ESQUEMA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_ESQUEMA';"`
 VAL_TABLA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA';"`
 VAL_URL=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_URL';"`
@@ -55,8 +54,7 @@ if [ -z "$ENTIDAD" ] ||
     [ -z "$VAL_ESQUEMA_SQLSERVER" ] || 
     [ -z "$VAL_TABLA_SQLSERVER" ] || 
     [ -z "$VAL_RUTA_SPARK" ] || 
-    [ -z "$VAL_LOG" ] || 
-    [ -z "$VAL_COLA_EJECUCION" ] ; then
+    [ -z "$VAL_LOG" ] ; then
 	echo " ERROR: - uno de los parametros esta vacio o nulo"
 	exit 1
 fi
@@ -67,8 +65,6 @@ echo "==== Inicia extraccion tabla V_TRADICIONALES_IMPLEMENTADAS_DAS de SQLServe
 #REALIZA LA TRANSFERENCIA DE LOS ARCHIVOS DESDE EL SERVIDOR FTP A RUTA LOCAL EN BIGDATA
 echo "==== Ejecuta archivo spark otc_t_v_tradicionales_implementadas.py que extrae informacion de SQL SERVER a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 $VAL_RUTA_SPARK \
- 
-
 --conf spark.port.maxRetries=100 \
 --master local \
 --executor-memory 32G \

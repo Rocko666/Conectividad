@@ -26,7 +26,6 @@ VAL_FECHA_EJEC=$1
 #VAL_RUTA=$2
 VAL_RUTA=/home/nae105215/EXT_CONECTIVIDAD
 ETAPA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'ETAPA';"`
-VAL_COLA_EJECUCION=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_COLA_EJECUCION';"`
 VAL_ESQUEMA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_ESQUEMA';"`
 VAL_TABLA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA';"`
 VAL_NOM_ARCHIVO=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO';"`
@@ -80,8 +79,7 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$VAL_FTP_USER" ] || 
     [ -z "$VAL_FTP_HOSTNAME" ] || 
     [ -z "$VAL_FTP_PASS" ] || 
-    [ -z "$VAL_FTP_RUTA" ] || 
-    [ -z "$VAL_COLA_EJECUCION" ] ||  
+    [ -z "$VAL_FTP_RUTA" ] ||  
     [ -z "$VAL_LOG" ]; then
 	echo " ERROR: - uno de los parametros esta vacio o nulo"
 	exit 1
@@ -108,6 +106,7 @@ echo "==== Ejecuta archivo spark otc_t_ext_conectividad.py que carga informacion
 $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
 --master yarn \
+--queue reportes \
 --executor-memory 16G \
 --num-executors 12 \
 --executor-cores 12 \
@@ -137,6 +136,7 @@ echo "==== Lee tabla de Extractor Conectividad y genera archivo en ruta output =
 $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
 --master yarn \
+--queue reportes \
 --executor-memory 16G \
 --num-executors 6 \
 --executor-cores 6 \
@@ -159,7 +159,7 @@ if [ $error_spark -eq 0 ];then
 	exit 1
 fi
 
-#vFTP_NOM_ARCHIVO_FORMATO='Extractor_Conectividad_Test.txt'
+vFTP_NOM_ARCHIVO_FORMATO='Extractor_Conectividad_Test.txt'
 #VERIFICA SI EL ARCHIVO TXT CONTIENE DATOS
 echo "==== Valida si el archivo TXT contiene datos ====" >> $VAL_LOG
 cant_reg=`wc -l ${VAL_RUTA_ARCHIVO}` 
@@ -192,7 +192,7 @@ function exportar()
 		expect "sftp>"
 		send "cd ${VAL_FTP_RUTA}\n"
 		expect "sftp>"
-		send "put $VAL_RUTA_ARCHIVO\n"
+		send "put ${VAL_RUTA_ARCHIVO} $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
 		expect "sftp>"
 		send "exit\n"
 		interact

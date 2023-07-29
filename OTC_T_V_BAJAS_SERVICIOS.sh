@@ -27,7 +27,6 @@ VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GE
 #PARAMETROS QUE RECIBE LA SHELL
 VAL_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA';"`
 VAL_ESQUEMA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_ESQUEMA';"`
-VAL_COLA_EJECUCION=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_COLA_EJECUCION';"`
 VAL_TABLA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA';"`
 VAL_URL=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_URL';"`
 VAL_DATABASE=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_DATABASE';"`
@@ -55,8 +54,7 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$VAL_ESQUEMA_SQLSERVER" ] || 
     [ -z "$VAL_TABLA_SQLSERVER" ] || 
     [ -z "$VAL_RUTA_SPARK" ] || 
-    [ -z "$VAL_LOG" ] || 
-    [ -z "$VAL_COLA_EJECUCION" ] ; then
+    [ -z "$VAL_LOG" ] ; then
 	echo " ERROR: - uno de los parametros esta vacio o nulo"
 	exit 1
 fi
