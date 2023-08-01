@@ -138,7 +138,7 @@ a.estado,
 e.id_tipo_movimiento AS id_subcanal,
 (CASE WHEN a.canal_comercial='NEGOCIOS INDIRECTOS' THEN 'DISTRIBUIDOR PYMES' ELSE 'CC COMERCIAL CALLCENTER B2B' END) AS subcanal,
 0 AS delta_renta
-FROM db_desarrollo2021.otc_t_v_digitales_implementadas a
+FROM db_userdas.otc_t_v_digitales_implementadas a
 LEFT JOIN (SELECT DISTINCT tipo_movimiento,id_tipo_movimiento 
 FROM db_reportes.otc_t_catalogo_consolidado_id
 WHERE extractor='Conectividad'
@@ -209,7 +209,7 @@ CAST('' AS string) AS estado,
 e.id_tipo_movimiento AS id_subcanal,
 (CASE WHEN a.canal_comercial='NEGOCIOS INDIRECTOS' THEN 'DISTRIBUIDOR PYMES' ELSE 'CC COMERCIAL CALLCENTER B2B' END) AS subcanal,
 0 AS delta_renta
-FROM db_desarrollo2021.otc_t_v_digitales_ganadas a
+FROM db_userdas.otc_t_v_digitales_ganadas a
 LEFT JOIN (SELECT DISTINCT tipo_movimiento,id_tipo_movimiento 
 FROM db_reportes.otc_t_catalogo_consolidado_id
 WHERE extractor='Conectividad'
@@ -280,7 +280,7 @@ a.estado,
 e.id_tipo_movimiento AS id_subcanal,
 (CASE WHEN a.canal_comercial='NEGOCIOS INDIRECTOS' THEN 'DISTRIBUIDOR PYMES' ELSE 'CC COMERCIAL CALLCENTER B2B' END) AS subcanal,
 (a.vmrc - a.mrc_actual) AS delta_renta
-FROM db_desarrollo2021.otc_t_v_tradicionales_implementadas a
+FROM db_userdas.otc_t_v_tradicionales_implementadas a
 LEFT JOIN (SELECT DISTINCT tipo_movimiento,id_tipo_movimiento 
 FROM db_reportes.otc_t_catalogo_consolidado_id
 WHERE extractor='Conectividad'
@@ -351,7 +351,7 @@ CAST('' AS string) AS estado,
 e.id_tipo_movimiento AS id_subcanal,
 (CASE WHEN a.canal_comercial='NEGOCIOS INDIRECTOS' THEN 'DISTRIBUIDOR PYMES' ELSE 'CC COMERCIAL CALLCENTER B2B' END) AS subcanal,
 (a.vmrc - a.mrc_actual) AS delta_renta
-FROM db_desarrollo2021.otc_t_v_tradicionales_ganadas a
+FROM db_userdas.otc_t_v_tradicionales_ganadas a
 LEFT JOIN (SELECT DISTINCT tipo_movimiento,id_tipo_movimiento 
 FROM db_reportes.otc_t_catalogo_consolidado_id
 WHERE extractor='Conectividad'
@@ -422,7 +422,7 @@ CAST('' AS string) AS estado,
 e.id_tipo_movimiento AS id_subcanal,
 (CASE WHEN a.canal_comercial='NEGOCIOS INDIRECTOS' THEN 'DISTRIBUIDOR PYMES' ELSE 'CC COMERCIAL CALLCENTER B2B' END) AS subcanal,
 0 AS delta_renta
-FROM db_desarrollo2021.otc_t_v_bajas_servicios a
+FROM db_userdas.otc_t_v_bajas_servicios a
 LEFT JOIN (SELECT DISTINCT tipo_movimiento,id_tipo_movimiento 
 FROM db_reportes.otc_t_catalogo_consolidado_id
 WHERE extractor='Conectividad'
@@ -450,7 +450,7 @@ print(vSql)
 timestart_tbl = datetime.datetime.now()
 print ("==== Guardando los datos en tabla "+bd+" ====")
 df0 = spark.sql(vSql.format(vFecha_Proceso=vFecha_Proceso))
-df0.repartition(1).write.format("parquet").mode("overwrite").saveAsTable(bd)
+df0.write.format("parquet").mode("overwrite").saveAsTable(bd)
 df0.printSchema()
 timeend_tbl = datetime.datetime.now()
 duracion_tbl = timeend_tbl - timestart_tbl

@@ -12,7 +12,6 @@ set -e
 #########################################################################################################
 # MODIFICACIONES																						#
 # FECHA  		AUTOR     		DESCRIPCION MOTIVO														#
-# 11/07/2023    Cristian Ortiz  Control errores, estandares Cloudera, cambio conexion SQL SERVER        #
 #########################################################################################################
 ##############
 # VARIABLES #
@@ -21,10 +20,9 @@ set -e
 ENTIDAD=EXTRCNCTVDD0040
 
 #PARAMETROS QUE RECIBE LA SHELL
-VAL_FECHA_EJEC=$1
-VAL_RUTA=$2
+VAL_FECHA_EJEC=$1 
+VAL_RUTA=$2 
 ETAPA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'ETAPA';"`
-VAL_COLA_EJECUCION=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_COLA_EJECUCION';"`
 VAL_ESQUEMA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_ESQUEMA';"`
 VAL_TABLA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA';"`
 VAL_NOM_ARCHIVO=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO';"`
@@ -78,8 +76,7 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$VAL_FTP_USER" ] || 
     [ -z "$VAL_FTP_HOSTNAME" ] || 
     [ -z "$VAL_FTP_PASS" ] || 
-    [ -z "$VAL_FTP_RUTA" ] || 
-    [ -z "$VAL_COLA_EJECUCION" ] ||  
+    [ -z "$VAL_FTP_RUTA" ] ||  
     [ -z "$VAL_LOG" ]; then
 	echo " ERROR: - uno de los parametros esta vacio o nulo"
 	exit 1

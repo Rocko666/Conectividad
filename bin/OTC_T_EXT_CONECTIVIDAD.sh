@@ -22,9 +22,9 @@ set -e
 ENTIDAD=D_EXTRCNCTVDD0040
 
 #PARAMETROS QUE RECIBE LA SHELL
-VAL_FECHA_EJEC=$1
+VAL_FECHA_EJEC=$1  
 #VAL_RUTA=$2
-VAL_RUTA=/home/nae105215/EXT_CONECTIVIDAD
+VAL_RUTA=/home/nae105215/EXT_CONECTIVIDAD  
 ETAPA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'ETAPA';"`
 VAL_ESQUEMA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_ESQUEMA';"`
 VAL_TABLA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA';"`
