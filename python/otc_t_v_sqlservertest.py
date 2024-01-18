@@ -56,10 +56,14 @@ sqlContext = SQLContext(sc)
 query = "(SELECT * FROM "+vTabla +" where [ID_FECHA_LLAMADA] >= 20231201 and [ID_FECHA_LLAMADA] <= 20231221) as c"
 
 df = sqlContext.read.format("jdbc") \
-	.option("url",vUrl).option("dbtable", query) \
-	.option("user", vUid).option("password", vPwd).option("driver","com.microsoft.sqlserver.jdbc.SQLServerDriver").load()
+	.option("url",vUrl) \
+    .option("dbtable", query) \
+	.option("user", vUid) \
+    .option("password", vPwd) \
+    .option("driver","com.microsoft.sqlserver.jdbc.SQLServerDriver") \
+    .load()
 
-df = df.withColumn('nomcli', F.regexp_replace('nomcli', '\t', ''))
+
 
 if df.limit(1).count <=0:
         exit(etq_nodata(msg_e_df_nodata(str('df'))))
